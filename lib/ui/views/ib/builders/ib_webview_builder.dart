@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:mobile_app/ui/views/ib/builders/custom_iframe_extension.dart';
 import 'package:markdown/markdown.dart' as md;
 
 class IbWebViewBuilder extends MarkdownElementBuilder {
@@ -13,25 +13,8 @@ class IbWebViewBuilder extends MarkdownElementBuilder {
 
     return Html(
       data: textContent,
-      customRenders: {
-        tagMatcher('iframe'): CustomRender.widget(
-          widget: (RenderContext context, _) {
-            final width = MediaQuery.of(context.buildContext).size.width;
-            final height = (width * 9) / 16;
-
-            return SizedBox(
-              width: width,
-              height: height,
-              child: WebView(
-                initialUrl: context.tree.element?.attributes['src'],
-                javascriptMode: JavascriptMode.unrestricted,
-                initialMediaPlaybackPolicy:
-                    AutoMediaPlaybackPolicy.always_allow,
-              ),
-            );
-          },
-        ),
-      },
+      // in newer version of flutter_html,customRenders has been replaced by extensions:
+      extensions: [CustomIframeExtension()],
     );
   }
 }

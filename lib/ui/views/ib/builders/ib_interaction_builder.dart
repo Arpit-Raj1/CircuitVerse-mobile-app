@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:mobile_app/models/failure_model.dart';
@@ -28,29 +29,59 @@ class IbInteractionBuilder extends MarkdownElementBuilder {
 
         var _textContent = snapshot.data.toString();
         var _streamController = StreamController<double>();
-        late WebViewController _webViewController;
+
+        // using webview_flutter we can use  WebViewWidget(controller: ...) instead of WebView().
 
         return StreamBuilder<double>(
           initialData: 100,
           stream: _streamController.stream,
-          builder: (context, snapshot) {
+          builder: (context, heightSnapshot) {
+            // uncomment for using webview_flutter
+            // late final WebViewController _webController;
+            //
+            // _webController = WebViewController()
+            //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
+            //   ..setNavigationDelegate(
+            //     NavigationDelegate(
+            //       onPageFinished: (url) async {
+            //         try {
+            //           final result =
+            //               await _webController.runJavaScriptReturningResult(
+            //                   'document.documentElement.scrollHeight');
+            //           final height = double.tryParse(
+            //                   result.toString().replaceAll('"', '')) ??
+            //               100;
+            //           _streamController.add(height);
+            //         } catch (e) {
+            //           _streamController.add(100); // fallback height
+            //         }
+            //       },
+            //     ),
+            //   )
+            //   ..loadHtmlString(_textContent);
+
             return SizedBox(
-              height: snapshot.data,
-              child: WebView(
-                initialUrl:
-                    'data:text/html;base64,${base64Encode(const Utf8Encoder().convert(_textContent))}',
-                onWebViewCreated: (_controller) {
-                  _webViewController = _controller;
-                },
-                onPageFinished: (some) async {
-                  var height = double.parse(
-                      await _webViewController.runJavascriptReturningResult(
-                          'document.documentElement.scrollHeight;'));
-                  _streamController.add(height);
-                },
-                javascriptMode: JavascriptMode.unrestricted,
-              ),
-            );
+                height: heightSnapshot.data,
+                child: InAppWebView(
+                    initialData: InAppWebViewInitialData(data: _textContent),
+                    initialOptions: InAppWebViewGroupOptions(
+                      crossPlatform: InAppWebViewOptions(
+                        javaScriptEnabled: true,
+                        transparentBackground: true,
+                      ),
+                    ),
+                    onLoadStop: (controller, url) async {
+                      try {
+                        final heightStr = await controller.evaluateJavascript(
+                          source: 'document.documentElement.scrollHeight;',
+                        );
+                        final height =
+                            double.tryParse(heightStr.toString()) ?? 100;
+                        _streamController.add(height);
+                      } catch (e) {
+                        _streamController.add(100); // fallback height
+                      }
+                    }));
           },
         );
       },

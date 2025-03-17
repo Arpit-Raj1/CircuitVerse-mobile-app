@@ -83,23 +83,21 @@ void main() {
           onGenerateRoute: CVRouter.generateRoute,
           navigatorObservers: [mockObserver],
           home: ShowCaseWidget(
-            builder: Builder(
-              builder: (_) {
-                return BaseView<IbLandingViewModel>(
-                  builder: (context, model, _) {
-                    return IbPageView(
-                      key: UniqueKey(),
-                      chapter: _chapter,
-                      tocCallback: (val) {},
-                      setPage: (e) {},
-                      showCase: showCase,
-                      setShowCase: (e) {},
-                      globalKeysMap: globalKeyMap,
-                    );
-                  },
-                );
-              },
-            ),
+            builder: (_) {
+              return BaseView<IbLandingViewModel>(
+                builder: (context, model, _) {
+                  return IbPageView(
+                    key: UniqueKey(),
+                    chapter: _chapter,
+                    tocCallback: (val) {},
+                    setPage: (e) {},
+                    showCase: showCase,
+                    setShowCase: (e) {},
+                    globalKeysMap: globalKeyMap,
+                  );
+                },
+              );
+            },
           ),
         ),
       );

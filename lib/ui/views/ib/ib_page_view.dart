@@ -191,9 +191,9 @@ class _IbPageViewState extends State<IbPageView> {
       data: data.content,
       selectable: _selectable,
       imageDirectory: EnvironmentConfig.IB_BASE_URL,
-      imageBuilder: _buildMarkdownImage,
+      imageBuilder: _buildMarkdownImage as MarkdownImageBuilder,
       onTapLink: _onTapLink,
-      blockBuilders: {
+      builders: {
         'h1': _headingsBuilder,
         'h2': _headingsBuilder,
         'h3': _headingsBuilder,
@@ -213,7 +213,7 @@ class _IbPageViewState extends State<IbPageView> {
         'interaction': IbInteractionBuilder(model: _model),
         'quiz': IbPopQuizBuilder(context: context, model: _model),
       },
-      builders: _inlineBuilders,
+      // builders: _inlineBuilders,
       extensionSet: md.ExtensionSet(
         [
           IbEmbedSyntax(),

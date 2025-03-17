@@ -50,70 +50,45 @@ class CVTypeAheadField extends StatelessWidget {
 
     return Padding(
       padding: padding,
-      child: FutureBuilder(
-        builder: (context, projectSnap) {
-          if (projectSnap.connectionState == ConnectionState.none &&
-              projectSnap.hasData) {
-            return Container();
+      child: TypeAheadFormField(
+        suggestionsCallback: (pattern) async {
+          try {
+            if (toggle == COUNTRY) {
+              return await countryInstituteObject.getCountries(
+                pattern,
+              );
+            }
+            if (toggle == EDUCATIONAL_INSTITUTE) {
+              return await countryInstituteObject.getInstitutes(
+                pattern,
+              );
+            }
+            //// If there is need of some other API Fetch add another if condition
+            return [
+              if (pattern == '') 'No suggestions found' else pattern,
+            ];
+          } catch (e) {
+            return [
+              if (pattern == '') 'No suggestions found' else pattern,
+            ];
           }
-          return TypeAheadFormField(
-            textFieldConfiguration: TextFieldConfiguration(
-              decoration: CVTheme.textFieldDecoration.copyWith(
-                labelText: label,
-                labelStyle: TextStyle(
-                  color: CVTheme.textColor(context),
-                ),
-              ),
-              controller: controller,
-              textInputAction: action,
-              focusNode: focusNode,
-              style: TextStyle(
-                color: CVTheme.textColor(context),
-              ),
-              maxLines: maxLines,
-              keyboardType: type,
-              autofocus: true,
-            ),
-            suggestionsCallback: (pattern) async {
-              try {
-                if (toggle == COUNTRY) {
-                  return await countryInstituteObject.getCountries(
-                    pattern,
-                  );
-                }
-                if (toggle == EDUCATIONAL_INSTITUTE) {
-                  return await countryInstituteObject.getInstitutes(
-                    pattern,
-                  );
-                }
-                //// If there is need of some other API Fetch add another if condition
-                return [
-                  if (pattern == '') 'No suggestions found' else pattern,
-                ];
-              } catch (e) {
-                return [
-                  if (pattern == '') 'No suggestions found' else pattern,
-                ];
-              }
-            },
-            transitionBuilder: (context, suggestionsBox, controller) {
-              return suggestionsBox;
-            },
-            itemBuilder: (context, suggestion) {
-              return ListTile(
-                title: Text(suggestion as String),
-              );
-            },
-            onSuggestionSelected: (value) {
-              if (value != '') {
-                controller?.text = value as String;
-              }
-            },
-            onSaved: (value) {
-              onSaved!(
-                (value == '') ? (text ?? 'N.A') : value,
-              );
-            },
+        },
+        transitionBuilder: (context, suggestionsBox, controller) {
+          return suggestionsBox;
+        },
+        itemBuilder: (context, suggestion) {
+          return ListTile(
+            title: Text(suggestion as String),
+          );
+        },
+        onSuggestionSelected: (value) {
+          if (value != '') {
+            controller?.text = value as String;
+          }
+        },
+        onSaved: (value) {
+          onSaved!(
+            (value == '') ? (text ?? 'N.A') : value,
           );
         },
       ),
