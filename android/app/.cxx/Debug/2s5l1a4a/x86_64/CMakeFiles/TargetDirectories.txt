@@ -1,0 +1,2 @@
+D:/Home/Desktop/GSOC 2025/CircuitVerse-mobile-app/android/app/.cxx/Debug/2s5l1a4a/x86_64/CMakeFiles/edit_cache.dir
+D:/Home/Desktop/GSOC 2025/CircuitVerse-mobile-app/android/app/.cxx/Debug/2s5l1a4a/x86_64/CMakeFiles/rebuild_cache.dir

@@ -1,3 +1,9 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -6,10 +12,6 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-}
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
@@ -22,17 +24,17 @@ if (flutterVersionName == null) {
 }
 
 def environmentVariables = [
-    FB_APP_NAME: 'FB_APP_NAME',
-    FB_APP_ID: 'FB_APP_ID',
+        FB_APP_NAME: 'FB_APP_NAME',
+        FB_APP_ID: 'FB_APP_ID',
 ];
 
 if (project.hasProperty('dart-defines')) {
     environmentVariables = environmentVariables + project.property('dart-defines')
-        .split(',')
-        .collectEntries { entry ->
-            def pair = URLDecoder.decode(entry).split('=')
-            [(pair.first()): pair.last()]
-        }
+            .split(',')
+            .collectEntries { entry ->
+                def pair = URLDecoder.decode(entry).split('=')
+                [(pair.first()): pair.last()]
+            }
 }
 
 // debug keystore configuration
@@ -51,21 +53,10 @@ if (releaseKeystorePropertiesFile.exists()) {
     releaseKeystoreProperties.load(new FileInputStream(releaseKeystorePropertiesFile))
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    namespace 'org.circuitverse.mobile_app'
     compileSdkVersion 35
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-
-    lintOptions {
-        disable 'InvalidPackage'
-    }
+    namespace 'org.circuitverse.mobile_app'
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -76,10 +67,18 @@ android {
         jvmTarget = '17'
     }
 
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
     defaultConfig {
         applicationId "org.circuitverse.mobile_app"
-        minSdkVersion 21
-        targetSdkVersion 35
+        minSdkVersion 23
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -110,22 +109,20 @@ android {
 
     buildTypes {
         release {
-            if (releaseKeystorePropertiesFile.exists()) {
+            if(releaseKeystorePropertiesFile.exists()){
                 signingConfig signingConfigs.release
-            } else {
+            }else{
                 signingConfig signingConfigs.debug
             }
         }
     }
 }
 
-
 flutter {
     source '../..'
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'

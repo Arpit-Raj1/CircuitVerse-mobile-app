@@ -37,7 +37,7 @@ class CustomIframeExtension extends HtmlExtension {
       width: screenWidth,
       height: height,
       child: InAppWebView(
-        initialUrlRequest: URLRequest(url: Uri.parse(src)),
+        initialUrlRequest: URLRequest(url: WebUri(src)),
         initialOptions: InAppWebViewGroupOptions(
             crossPlatform: InAppWebViewOptions(
           javaScriptEnabled: true,
